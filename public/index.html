@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Welcome to Firebase Hosting</title>
 
+	<script src="https://npmcdn.com/vue/dist/vue.js"></script>
     <!-- update the version number as needed -->
     <script defer src="/__/firebase/8.2.9/firebase-app.js"></script>
     <!-- include only the Firebase features as you need -->
@@ -23,42 +24,213 @@
     -->
     <script defer src="/__/firebase/init.js?useEmulator=true"></script>
 
-    <style media="screen">
-      body { background: #ECEFF1; color: rgba(0,0,0,0.87); font-family: Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
-      #message { background: white; max-width: 360px; margin: 100px auto 16px; padding: 32px 24px; border-radius: 3px; }
-      #message h2 { color: #ffa100; font-weight: bold; font-size: 16px; margin: 0 0 8px; }
-      #message h1 { font-size: 22px; font-weight: 300; color: rgba(0,0,0,0.6); margin: 0 0 16px;}
-      #message p { line-height: 140%; margin: 16px 0 24px; font-size: 14px; }
-      #message a { display: block; text-align: center; background: #039be5; text-transform: uppercase; text-decoration: none; color: white; padding: 16px; border-radius: 4px; }
-      #message, #message a { box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); }
-      #load { color: rgba(0,0,0,0.4); text-align: center; font-size: 13px; }
-      @media (max-width: 600px) {
-        body, #message { margin-top: 0; background: white; box-shadow: none; }
-        body { border-top: 16px solid #ffa100; }
-      }
-    </style>
+	<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+	<style>
+		@import url(https://fonts.googleapis.com/css?family=Open+Sans);
+
+        body{
+          background: #f2f2f2;
+          font-family: 'Open Sans', sans-serif;
+        }
+        
+        .search {
+          width: 80%;
+          margin: 0 auto;
+          position: relative;
+          display: flex;
+        }
+        
+        .searchResults {
+        	width: 80%;
+        	margin: 0 auto;
+        	position: relative;
+        	padding-bottom: 10px;
+        }
+        
+        .searchResults img {
+        	position: relative;
+        	margin-left: 0px;
+        }
+        
+        .results {
+        	min-height: 30px;
+        	clear: both; 
+        	padding-bottom:80px;
+        }
+        
+        .searchTerm {
+          width: 100%;
+          border: 3px solid #00B4CC;
+          border-right: none;
+          padding: 5px;
+          height: 20px;
+          border-radius: 5px 0 0 5px;
+          outline: none;
+          color: #9DBFAF;
+        }
+        
+        .searchTerm:focus{
+          color: #00B4CC;
+        }
+        
+        .searchButton {
+          width: 40px;
+          height: 36px;
+          border: 1px solid #00B4CC;
+          background: #00B4CC;
+          text-align: center;
+          color: #fff;
+          border-radius: 0 5px 5px 0;
+          cursor: pointer;
+          font-size: 20px;
+        }
+        
+        
+        @media (max-width: 600px) {
+        	body, #message { margin-top: 0; background: white; box-shadow: none; }
+        	body { border-top: 16px solid #ffa100; }
+        }
+
+        .avatar { width: 80px; height: 80px }
+		.column {
+  display: flex;
+  flex-direction: column;
+  flex-basis: 100%;
+  flex: 1;
+		}
+		.row {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  width: 100%;
+}
+	table {
+		width: 50%;
+	}
+
+	.rowLabel {
+		text-align: right; 
+		padding-right: 15px;
+	}
+
+
+	table tr:nth-of-type(even) {
+    background-color: #cceaee;
+}
+	</style>
+    <link href="/search.css" rel="stylesheet">
   </head>
   <body>
 	<div id="app">
-		{{ searchResults }}
+		<div class="wrap">
+			<div class="search">
+				<input type="text" class="searchTerm" placeholder="Search" v-model="username" v-on:keyup.enter="searchUser">
+				<button type="submit" class="searchButton" v-on:click="searchUser">
+					<i class="fa fa-search"></i>
+		 		</button>
+	  		</div>
+			<div class="searchResults">
+					<div class="row" v-for="chunk in chunks">
+						<div  class="column results" v-for="(user, i) in chunk">
+							<div>
+								<img class="avatar" :src="user.avatarUrl"  style="margin-left: 20%; margin-top: 10px;">
+							</div>
+							<table>
+								<tr>
+									<td class="rowLabel">Username</td>
+									<td>{{ user.username }}</td>
+								</tr>
+								<tr>
+									<td class="rowLabel">Name</td>
+									<td>{{ user.realName }}</td>
+								</tr>
+								<tr>
+									<td class="rowLabel">Email</td>
+									<td>{{ user.email || "No Public Email"}}</td>
+								</tr>
+								<tr>
+									<td class="rowLabel">Location</td>
+									<td>{{ user.location }}</td>
+								</tr>
+								<tr>
+									<td class="rowLabel">Public Repos</td>
+									<td>{{ user.publicRepos }}</td>
+								</tr>
+								<tr>
+									<td class="rowLabel">Account Creation</td>
+									<td>{{ user.accountCreationTimestamp }}</td>
+								</tr>
+								<tr>
+									<td class="rowLabel">Last Update</td>
+									<td>{{ user.lastUpdateTimestamp }}</td>
+								</tr>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
 	</div>
 
 	<script>
-		var app = new Vue({
+		new Vue({
 			el: '#app',
 			data: {
-				searchResults: 'These are the results'
-			}
-		})
-	</script>
+				username: '',
+				users: [{"username":"shawn","avatarUrl":"https://avatars.githubusercontent.com/u/10295?v=4","location":"Toronto, Ontario, Canada","realName":"Shawn Allison","email":null,"publicRepos":0,"accountCreationTimestamp":"2008-05-14T19:04:02Z","lastUpdateTimestamp":"2021-01-12T16:50:35Z"},{"username":"shawnwildermuth","avatarUrl":"https://avatars.githubusercontent.com/u/568272?v=4","location":"Atlanta, GA","realName":"Shawn Wildermuth","email":null,"publicRepos":84,"accountCreationTimestamp":"2011-01-17T04:29:49Z","lastUpdateTimestamp":"2021-02-23T16:16:01Z"},{"username":"shawnbot","avatarUrl":"https://avatars.githubusercontent.com/u/113896?v=4","location":"San Francisco","realName":"Shawn Allen","email":null,"publicRepos":144,"accountCreationTimestamp":"2009-08-10T19:41:47Z","lastUpdateTimestamp":"2021-03-04T01:33:51Z"},{"username":"ShawnMcCool","avatarUrl":"https://avatars.githubusercontent.com/u/560749?v=4","location":"Utrecht, Netherlands","realName":"Shawn McCool","email":null,"publicRepos":52,"accountCreationTimestamp":"2011-01-12T18:31:22Z","lastUpdateTimestamp":"2021-02-14T11:45:48Z"},{"username":"shawntabrizi","avatarUrl":"https://avatars.githubusercontent.com/u/1860335?v=4","location":"Puerto Rico","realName":"Shawn Tabrizi","email":null,"publicRepos":99,"accountCreationTimestamp":"2012-06-18T01:53:04Z","lastUpdateTimestamp":"2021-02-24T06:33:39Z"},{"username":"shawntan","avatarUrl":"https://avatars.githubusercontent.com/u/119799?v=4","location":"Montreal","realName":"Shawn Tan","email":null,"publicRepos":84,"accountCreationTimestamp":"2009-08-26T17:11:44Z","lastUpdateTimestamp":"2021-03-02T00:18:08Z"},{"username":"shawnps","avatarUrl":"https://avatars.githubusercontent.com/u/80111?v=4","location":"Tokyo, Japan","realName":"Shawn Smith","email":null,"publicRepos":208,"accountCreationTimestamp":"2009-05-02T01:00:38Z","lastUpdateTimestamp":"2021-03-04T02:57:19Z"},{"username":"shawngraham","avatarUrl":"https://avatars.githubusercontent.com/u/4266026?v=4","location":null,"realName":"Shawn Graham","email":null,"publicRepos":253,"accountCreationTimestamp":"2013-04-26T14:55:53Z","lastUpdateTimestamp":"2021-02-21T18:56:26Z"},{"username":"shaoshuai0102","avatarUrl":"https://avatars.githubusercontent.com/u/456108?v=4","location":"Hangzhou. China","realName":"Shawn","email":null,"publicRepos":28,"accountCreationTimestamp":"2010-10-27T09:59:16Z","lastUpdateTimestamp":"2021-01-12T06:59:58Z"},{"username":"KOP-XIAO","avatarUrl":"https://avatars.githubusercontent.com/u/45581750?v=4","location":null,"realName":"Shawn","email":null,"publicRepos":12,"accountCreationTimestamp":"2018-12-04T02:32:45Z","lastUpdateTimestamp":"2021-02-05T16:03:24Z"},{"username":"shawncplus","avatarUrl":"https://avatars.githubusercontent.com/u/162674?v=4","location":"Buffalo, NY","realName":"Shawn Biddle","email":null,"publicRepos":35,"accountCreationTimestamp":"2009-12-05T06:53:26Z","lastUpdateTimestamp":"2021-02-21T00:08:15Z"},{"username":"ShawnHymel","avatarUrl":"https://avatars.githubusercontent.com/u/5232145?v=4","location":"Mandeville, LA","realName":"Shawn Hymel","email":null,"publicRepos":95,"accountCreationTimestamp":"2013-08-14T19:08:28Z","lastUpdateTimestamp":"2021-01-13T23:53:24Z"},{"username":"erquhart","avatarUrl":"https://avatars.githubusercontent.com/u/2112202?v=4","location":"Wilmington, NC, USA","realName":"Shawn Erquhart","email":null,"publicRepos":144,"accountCreationTimestamp":"2012-08-07T20:06:29Z","lastUpdateTimestamp":"2021-03-03T18:43:09Z"},{"username":"ShawnyXiao","avatarUrl":"https://avatars.githubusercontent.com/u/9656978?v=4","location":"Guangdong, China","realName":"Xiaoyue Xiao","email":null,"publicRepos":21,"accountCreationTimestamp":"2014-11-10T13:35:22Z","lastUpdateTimestamp":"2021-02-10T15:36:31Z"},{"username":"shawn42","avatarUrl":"https://avatars.githubusercontent.com/u/12105?v=4","location":"Holland, MI","realName":"Shawn Anderson","email":null,"publicRepos":67,"accountCreationTimestamp":"2008-05-31T20:34:39Z","lastUpdateTimestamp":"2021-02-05T01:24:45Z"},{"username":"tianxiaoliang","avatarUrl":"https://avatars.githubusercontent.com/u/1610890?v=4","location":null,"realName":"Shawn","email":null,"publicRepos":66,"accountCreationTimestamp":"2012-04-04T07:39:04Z","lastUpdateTimestamp":"2021-02-24T10:29:22Z"},{"username":"shawndrost","avatarUrl":"https://avatars.githubusercontent.com/u/160210?v=4","location":null,"realName":null,"email":null,"publicRepos":29,"accountCreationTimestamp":"2009-12-01T04:27:56Z","lastUpdateTimestamp":"2021-01-26T18:17:55Z"},{"username":"shawndwells","avatarUrl":"https://avatars.githubusercontent.com/u/5713754?v=4","location":"Virginia, USA","realName":"Shawn Wells","email":null,"publicRepos":47,"accountCreationTimestamp":"2013-10-17T22:42:14Z","lastUpdateTimestamp":"2021-03-03T17:36:17Z"},{"username":"shawnlawson","avatarUrl":"https://avatars.githubusercontent.com/u/874152?v=4","location":"AZ","realName":"Shawn Lawson","email":null,"publicRepos":49,"accountCreationTimestamp":"2011-06-24T20:16:31Z","lastUpdateTimestamp":"2021-02-21T15:27:52Z"},{"username":"shawnrice","avatarUrl":"https://avatars.githubusercontent.com/u/3452150?v=4","location":"San Francisco, CA","realName":"Shawn Patrick Rice","email":null,"publicRepos":61,"accountCreationTimestamp":"2013-02-01T20:33:27Z","lastUpdateTimestamp":"2021-03-03T17:56:31Z"},{"username":"shawnkoon","avatarUrl":"https://avatars.githubusercontent.com/u/16849235?v=4","location":"Seattle, WA","realName":"shawn","email":null,"publicRepos":89,"accountCreationTimestamp":"2016-01-23T07:10:52Z","lastUpdateTimestamp":"2020-12-09T04:16:23Z"},{"username":"ShawnZhang2015","avatarUrl":"https://avatars.githubusercontent.com/u/10387708?v=4","location":null,"realName":null,"email":null,"publicRepos":25,"accountCreationTimestamp":"2015-01-04T07:59:37Z","lastUpdateTimestamp":"2020-12-29T13:04:29Z"},{"username":"CharlesCreativeContent","avatarUrl":"https://avatars.githubusercontent.com/u/62077627?v=4","location":"Boston, MA","realName":"Shawn Charles","email":null,"publicRepos":37,"accountCreationTimestamp":"2020-03-11T20:10:11Z","lastUpdateTimestamp":"2021-02-09T15:27:38Z"},{"username":"ShawnBIT","avatarUrl":"https://avatars.githubusercontent.com/u/20378492?v=4","location":"Beijing，China","realName":"Shawn Wang","email":null,"publicRepos":15,"accountCreationTimestamp":"2016-07-10T06:01:00Z","lastUpdateTimestamp":"2021-02-19T08:42:40Z"},{"username":"shawnr","avatarUrl":"https://avatars.githubusercontent.com/u/38453?v=4","location":"Seattle, WA","realName":"Shawn Rider","email":null,"publicRepos":78,"accountCreationTimestamp":"2008-12-05T03:21:12Z","lastUpdateTimestamp":"2021-02-08T19:53:46Z"},{"username":"shawnmclean","avatarUrl":"https://avatars.githubusercontent.com/u/199751?v=4","location":null,"realName":"Shawn Mclean","email":null,"publicRepos":50,"accountCreationTimestamp":"2010-02-08T18:57:19Z","lastUpdateTimestamp":"2021-03-01T03:09:56Z"},{"username":"cicorias","avatarUrl":"https://avatars.githubusercontent.com/u/1080406?v=4","location":"NJ","realName":"Shawn Cicoria","email":null,"publicRepos":898,"accountCreationTimestamp":"2011-09-26T11:39:19Z","lastUpdateTimestamp":"2021-03-01T03:29:12Z"},{"username":"ShawnZhong","avatarUrl":"https://avatars.githubusercontent.com/u/6421097?v=4","location":"Madison, Wisconsin","realName":"Shawn Zhong","email":null,"publicRepos":44,"accountCreationTimestamp":"2014-01-16T15:52:21Z","lastUpdateTimestamp":"2021-03-03T04:31:17Z"},{"username":"shawnyuen","avatarUrl":"https://avatars.githubusercontent.com/u/15810074?v=4","location":"Dongguan, China","realName":"Shaofeng Yuan","email":null,"publicRepos":25,"accountCreationTimestamp":"2015-11-12T03:13:36Z","lastUpdateTimestamp":"2021-02-08T05:47:39Z"},{"username":"shawnwun","avatarUrl":"https://avatars.githubusercontent.com/u/748478?v=4","location":"London","realName":"Shawn Wen","email":null,"publicRepos":16,"accountCreationTimestamp":"2011-04-24T07:27:29Z","lastUpdateTimestamp":"2021-02-19T16:07:06Z"}],
+				// users: []
+				chunks: [],
+			},
+			methods: {
 
-    <div id="message">
-      <h2>Welcome</h2>
-      <h1>Firebase Hosting Setup Complete</h1>
-      <p>You're seeing this because you've successfully setup Firebase Hosting. Now it's time to go build something extraordinary!</p>
-      <a target="_blank" href="https://firebase.google.com/docs/hosting/">Open Hosting Documentation</a>
-    </div>
-    <p id="load">Firebase SDK Loading&hellip;</p>
+			    searchUser: function () { 
+					// console.log("Username: ", this)
+					// this.users = []
+					// loading = true
+					// var searchData = {
+					// 	search: this.username.trim()
+					// }
+					// fetch('https://us-central1-github-sear.cloudfunctions.net/searchUser', {
+					// 	method: "POST",
+					// 	headers: {
+					// 		"Content-Type": "application/json"
+					// 	},
+					// 	body: JSON.stringify(searchData)
+					// })
+					// .then(response => response.json())
+					// .then(data => {
+						data = [{"username":"shawn","avatarUrl":"https://avatars.githubusercontent.com/u/10295?v=4","location":"Toronto, Ontario, Canada","realName":"Shawn Allison","email":null,"publicRepos":0,"accountCreationTimestamp":"2008-05-14T19:04:02Z","lastUpdateTimestamp":"2021-01-12T16:50:35Z"},{"username":"shawnwildermuth","avatarUrl":"https://avatars.githubusercontent.com/u/568272?v=4","location":"Atlanta, GA","realName":"Shawn Wildermuth","email":null,"publicRepos":84,"accountCreationTimestamp":"2011-01-17T04:29:49Z","lastUpdateTimestamp":"2021-02-23T16:16:01Z"},{"username":"shawnbot","avatarUrl":"https://avatars.githubusercontent.com/u/113896?v=4","location":"San Francisco","realName":"Shawn Allen","email":null,"publicRepos":144,"accountCreationTimestamp":"2009-08-10T19:41:47Z","lastUpdateTimestamp":"2021-03-04T01:33:51Z"},{"username":"ShawnMcCool","avatarUrl":"https://avatars.githubusercontent.com/u/560749?v=4","location":"Utrecht, Netherlands","realName":"Shawn McCool","email":null,"publicRepos":52,"accountCreationTimestamp":"2011-01-12T18:31:22Z","lastUpdateTimestamp":"2021-02-14T11:45:48Z"},{"username":"shawntabrizi","avatarUrl":"https://avatars.githubusercontent.com/u/1860335?v=4","location":"Puerto Rico","realName":"Shawn Tabrizi","email":null,"publicRepos":99,"accountCreationTimestamp":"2012-06-18T01:53:04Z","lastUpdateTimestamp":"2021-02-24T06:33:39Z"},{"username":"shawntan","avatarUrl":"https://avatars.githubusercontent.com/u/119799?v=4","location":"Montreal","realName":"Shawn Tan","email":null,"publicRepos":84,"accountCreationTimestamp":"2009-08-26T17:11:44Z","lastUpdateTimestamp":"2021-03-02T00:18:08Z"},{"username":"shawnps","avatarUrl":"https://avatars.githubusercontent.com/u/80111?v=4","location":"Tokyo, Japan","realName":"Shawn Smith","email":null,"publicRepos":208,"accountCreationTimestamp":"2009-05-02T01:00:38Z","lastUpdateTimestamp":"2021-03-04T02:57:19Z"},{"username":"shawngraham","avatarUrl":"https://avatars.githubusercontent.com/u/4266026?v=4","location":null,"realName":"Shawn Graham","email":null,"publicRepos":253,"accountCreationTimestamp":"2013-04-26T14:55:53Z","lastUpdateTimestamp":"2021-02-21T18:56:26Z"},{"username":"shaoshuai0102","avatarUrl":"https://avatars.githubusercontent.com/u/456108?v=4","location":"Hangzhou. China","realName":"Shawn","email":null,"publicRepos":28,"accountCreationTimestamp":"2010-10-27T09:59:16Z","lastUpdateTimestamp":"2021-01-12T06:59:58Z"},{"username":"KOP-XIAO","avatarUrl":"https://avatars.githubusercontent.com/u/45581750?v=4","location":null,"realName":"Shawn","email":null,"publicRepos":12,"accountCreationTimestamp":"2018-12-04T02:32:45Z","lastUpdateTimestamp":"2021-02-05T16:03:24Z"},{"username":"shawncplus","avatarUrl":"https://avatars.githubusercontent.com/u/162674?v=4","location":"Buffalo, NY","realName":"Shawn Biddle","email":null,"publicRepos":35,"accountCreationTimestamp":"2009-12-05T06:53:26Z","lastUpdateTimestamp":"2021-02-21T00:08:15Z"},{"username":"ShawnHymel","avatarUrl":"https://avatars.githubusercontent.com/u/5232145?v=4","location":"Mandeville, LA","realName":"Shawn Hymel","email":null,"publicRepos":95,"accountCreationTimestamp":"2013-08-14T19:08:28Z","lastUpdateTimestamp":"2021-01-13T23:53:24Z"},{"username":"erquhart","avatarUrl":"https://avatars.githubusercontent.com/u/2112202?v=4","location":"Wilmington, NC, USA","realName":"Shawn Erquhart","email":null,"publicRepos":144,"accountCreationTimestamp":"2012-08-07T20:06:29Z","lastUpdateTimestamp":"2021-03-03T18:43:09Z"},{"username":"ShawnyXiao","avatarUrl":"https://avatars.githubusercontent.com/u/9656978?v=4","location":"Guangdong, China","realName":"Xiaoyue Xiao","email":null,"publicRepos":21,"accountCreationTimestamp":"2014-11-10T13:35:22Z","lastUpdateTimestamp":"2021-02-10T15:36:31Z"},{"username":"shawn42","avatarUrl":"https://avatars.githubusercontent.com/u/12105?v=4","location":"Holland, MI","realName":"Shawn Anderson","email":null,"publicRepos":67,"accountCreationTimestamp":"2008-05-31T20:34:39Z","lastUpdateTimestamp":"2021-02-05T01:24:45Z"},{"username":"tianxiaoliang","avatarUrl":"https://avatars.githubusercontent.com/u/1610890?v=4","location":null,"realName":"Shawn","email":null,"publicRepos":66,"accountCreationTimestamp":"2012-04-04T07:39:04Z","lastUpdateTimestamp":"2021-02-24T10:29:22Z"},{"username":"shawndrost","avatarUrl":"https://avatars.githubusercontent.com/u/160210?v=4","location":null,"realName":null,"email":null,"publicRepos":29,"accountCreationTimestamp":"2009-12-01T04:27:56Z","lastUpdateTimestamp":"2021-01-26T18:17:55Z"},{"username":"shawndwells","avatarUrl":"https://avatars.githubusercontent.com/u/5713754?v=4","location":"Virginia, USA","realName":"Shawn Wells","email":null,"publicRepos":47,"accountCreationTimestamp":"2013-10-17T22:42:14Z","lastUpdateTimestamp":"2021-03-03T17:36:17Z"},{"username":"shawnlawson","avatarUrl":"https://avatars.githubusercontent.com/u/874152?v=4","location":"AZ","realName":"Shawn Lawson","email":null,"publicRepos":49,"accountCreationTimestamp":"2011-06-24T20:16:31Z","lastUpdateTimestamp":"2021-02-21T15:27:52Z"},{"username":"shawnrice","avatarUrl":"https://avatars.githubusercontent.com/u/3452150?v=4","location":"San Francisco, CA","realName":"Shawn Patrick Rice","email":null,"publicRepos":61,"accountCreationTimestamp":"2013-02-01T20:33:27Z","lastUpdateTimestamp":"2021-03-03T17:56:31Z"},{"username":"shawnkoon","avatarUrl":"https://avatars.githubusercontent.com/u/16849235?v=4","location":"Seattle, WA","realName":"shawn","email":null,"publicRepos":89,"accountCreationTimestamp":"2016-01-23T07:10:52Z","lastUpdateTimestamp":"2020-12-09T04:16:23Z"},{"username":"ShawnZhang2015","avatarUrl":"https://avatars.githubusercontent.com/u/10387708?v=4","location":null,"realName":null,"email":null,"publicRepos":25,"accountCreationTimestamp":"2015-01-04T07:59:37Z","lastUpdateTimestamp":"2020-12-29T13:04:29Z"},{"username":"CharlesCreativeContent","avatarUrl":"https://avatars.githubusercontent.com/u/62077627?v=4","location":"Boston, MA","realName":"Shawn Charles","email":null,"publicRepos":37,"accountCreationTimestamp":"2020-03-11T20:10:11Z","lastUpdateTimestamp":"2021-02-09T15:27:38Z"},{"username":"ShawnBIT","avatarUrl":"https://avatars.githubusercontent.com/u/20378492?v=4","location":"Beijing，China","realName":"Shawn Wang","email":null,"publicRepos":15,"accountCreationTimestamp":"2016-07-10T06:01:00Z","lastUpdateTimestamp":"2021-02-19T08:42:40Z"},{"username":"shawnr","avatarUrl":"https://avatars.githubusercontent.com/u/38453?v=4","location":"Seattle, WA","realName":"Shawn Rider","email":null,"publicRepos":78,"accountCreationTimestamp":"2008-12-05T03:21:12Z","lastUpdateTimestamp":"2021-02-08T19:53:46Z"},{"username":"shawnmclean","avatarUrl":"https://avatars.githubusercontent.com/u/199751?v=4","location":null,"realName":"Shawn Mclean","email":null,"publicRepos":50,"accountCreationTimestamp":"2010-02-08T18:57:19Z","lastUpdateTimestamp":"2021-03-01T03:09:56Z"},{"username":"cicorias","avatarUrl":"https://avatars.githubusercontent.com/u/1080406?v=4","location":"NJ","realName":"Shawn Cicoria","email":null,"publicRepos":898,"accountCreationTimestamp":"2011-09-26T11:39:19Z","lastUpdateTimestamp":"2021-03-01T03:29:12Z"},{"username":"ShawnZhong","avatarUrl":"https://avatars.githubusercontent.com/u/6421097?v=4","location":"Madison, Wisconsin","realName":"Shawn Zhong","email":null,"publicRepos":44,"accountCreationTimestamp":"2014-01-16T15:52:21Z","lastUpdateTimestamp":"2021-03-03T04:31:17Z"},{"username":"shawnyuen","avatarUrl":"https://avatars.githubusercontent.com/u/15810074?v=4","location":"Dongguan, China","realName":"Shaofeng Yuan","email":null,"publicRepos":25,"accountCreationTimestamp":"2015-11-12T03:13:36Z","lastUpdateTimestamp":"2021-02-08T05:47:39Z"},{"username":"shawnwun","avatarUrl":"https://avatars.githubusercontent.com/u/748478?v=4","location":"London","realName":"Shawn Wen","email":null,"publicRepos":16,"accountCreationTimestamp":"2011-04-24T07:27:29Z","lastUpdateTimestamp":"2021-02-19T16:07:06Z"}]
+
+						loading = false
+						const chunks = this.chunk(data, 2)
+						console.log("Chunks")
+						console.log(chunks)
+						this.users = data
+						this.chunks = chunks
+					// });
+			
+				},
+				chunk: function (arr, len) {
+					const chunks = []
+					var i = 0
+					const n = arr.length
+
+					while (i < n) {
+						chunks.push(arr.slice(i, i += len))
+					}
+
+					return chunks
+				}
+			}
+})
+/*
+username, avatar,
+location, real name, email, count of public repositories, account creation timestamp, and last
+update timestamp.
+*/
+		// https://api.github.com/search/users?q=Shawn%20Looker
+
+	</script>
 
     <script>
       document.addEventListener('DOMContentLoaded', function() {
@@ -91,10 +263,10 @@
             'remoteConfig',
             'performance',
           ].filter(feature => typeof app[feature] === 'function');
-          loadEl.textContent = `Firebase SDK loaded with ${features.join(', ')}`;
+        //   loadEl.textContent = `Firebase SDK loaded with ${features.join(', ')}`;
         } catch (e) {
           console.error(e);
-          loadEl.textContent = 'Error loading the Firebase SDK, check the console.';
+        //   loadEl.textContent = 'Error loading the Firebase SDK, check the console.';
         }
       });
     </script>

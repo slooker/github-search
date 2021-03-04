@@ -11,5 +11,8 @@
     "Search"
   ],
   "author": "Shawn Looker",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "@types/node-fetch": "^2.5.8"
+  }
 }
